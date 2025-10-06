@@ -1,0 +1,105 @@
+# Python general
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pkl
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+*.log
+
+# Virtual environments
+venv/
+.env/
+.envrc
+.venv/
+
+# Jupyter / Notebooks
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# IDEs / Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# App data
+# Local storage files
+index/*.faiss
+index/*.bin
+index/*.json
+index/*.pkl
+index/*.npy
+index/*.npz
+index/*.csv
+
+# Raw & processed data
+data/*.pdf
+data/*.txt
+data/*.epub
+data/processed/
+data/chunks/
+*.csv
+
+# Model weights & embeddings
+*.gguf
+*.pt
+*.bin
+*.h5
+*.ckpt
+*.safetensors
+models/
+checkpoints/
+cache/
+logs/
+outputs/
+
+# Gradio / FastAPI runtime
+__cache__/
+*.db
+*.sqlite
+*.sqlite3
+tmp/
+temp/
+*.tmp
+*.bak
+*.log
+*.pid
+
+# Hugging Face & other cache dirs
+~/.cache/
+~/.huggingface/
+~/.local/share/huggingface/
+~/.llama.cpp/
+~/.torch/
+
+# Environment & secrets
+.env
+*.env
+.env.*
+config.yaml
+config.json
+secrets.json
+credentials.json
+
+
+# Ignore demo videos & big files
+*.mp4
+*.avi
+*.mov
+*.zip
+*.tar
+*.gz
+
+# Backup / temp
+*~
+*.bak
