@@ -31,8 +31,8 @@ from .document_processor import AdvancedDocumentProcessor
 from .vector_database import AdvancedVectorDatabase  
 from .rag_system import AdvancedRAGSystem
 from .llm_manager import LLMManager, ModelType
-from .session_manager import SessionManager
-from .analytics_tracker import AnalyticsTracker
+# from .session_manager import SessionManager
+# from .analytics_tracker import AnalyticsTracker
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -316,8 +316,8 @@ async def startup_event():
         vector_db = AdvancedVectorDatabase()
         logger.info("Vector database initialized")
         
-        # Initialize LLM manager
-        llm_manager = LLMManager(ModelType.GPT4ALL_MISTRAL)
+        # Initialize LLM manager - using faster 3B model for better response times
+        llm_manager = LLMManager(ModelType.GPT4ALL_ORCA_MINI)
         logger.info("LLM manager initialized")
         
         # Initialize RAG system
@@ -606,5 +606,7 @@ if __name__ == "__main__":
         host="0.0.0.0",
         port=8000,
         reload=True,
-        log_level="info"
+        log_level="info",
+        timeout_keep_alive=120,  # Keep connections alive longer for slow LLM responses
+        timeout_graceful_shutdown=30
     )

@@ -185,16 +185,20 @@ class AdvancedVectorDatabase:
                 
                 # Process results
                 for i in range(len(results['ids'][0])):
+                    distance = results['distances'][0][i]
+                    # Fix for ChromaDB distances > 1.0 - use inverse distance for relevance
+                    relevance_score = 1.0 / (1.0 + distance)  # Always positive, higher = more relevant
+                    
                     result = {
                         'id': results['ids'][0][i],
                         'document': results['documents'][0][i],
                         'metadata': results['metadatas'][0][i],
-                        'distance': results['distances'][0][i],
+                        'distance': distance,
                         'collection': collection_name,
-                        'relevance_score': 1 - results['distances'][0][i]  # Convert distance to similarity
+                        'relevance_score': relevance_score
                     }
                     
-                    # Apply similarity threshold
+                    # Apply similarity threshold (now with proper positive scores)
                     if result['relevance_score'] >= similarity_threshold:
                         all_results.append(result)
                 
@@ -300,6 +304,16 @@ class AdvancedVectorDatabase:
                 }
         
         return stats
+    
+    def is_populated(self) -> bool:
+        """Check if the database has any documents"""
+        try:
+            stats = self.get_collection_stats()
+            total_docs = sum(collection_stats.get("document_count", 0) for collection_stats in stats.values())
+            return total_docs > 0
+        except Exception as e:
+            logger.error(f"Error checking if database is populated: {e}")
+            return False
     
     def semantic_similarity_search(
         self, 
@@ -410,7 +424,6 @@ class AdvancedVectorDatabase:
             logger.error(f"Error creating backup: {e}")
             return False
 
-# Example usage
 if __name__ == "__main__":
     # Initialize vector database
     vector_db = AdvancedVectorDatabase()

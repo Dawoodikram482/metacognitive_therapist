@@ -23,6 +23,7 @@ from sentence_transformers import SentenceTransformer
 import chromadb
 from chromadb.config import Settings
 import numpy as np
+import pandas as pd
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -290,8 +291,6 @@ class AdvancedDocumentProcessor:
         logger.info(f"Successfully processed document into {len(chunks)} chunks")
         return chunks
 
-# Example usage and testing
 if __name__ == "__main__":
     processor = AdvancedDocumentProcessor()
-    # This would be used to process your therapy book
     # chunks = processor.process_document(Path("data/Raw data.pdf"))

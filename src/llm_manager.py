@@ -6,7 +6,7 @@ prompt engineering, safety checks, and therapeutic response optimization.
 """
 
 import logging
-from typing import List, Dict, Any, Optional, Union, Callable
+from typing import List, Dict, Any, Optional, Union, Callable, Tuple
 import json
 import re
 from datetime import datetime
@@ -38,16 +38,30 @@ class ModelType(Enum):
 
 @dataclass
 class GenerationConfig:
-    """Configuration for text generation"""
-    max_tokens: int = 512
-    temperature: float = 0.7
-    top_p: float = 0.9
-    top_k: int = 40
-    repeat_penalty: float = 1.1
-    n_batch: int = 8
-    n_threads: int = 4
-    enable_safety_filter: bool = True
-    enable_therapeutic_optimization: bool = True
+    """Configuration for text generation - BALANCED FOR COMPLETE RESPONSES"""
+    max_tokens: int = 300       # Allow for complete responses (~200-250 words)
+    temperature: float = 0.3    # Balanced temp for quality responses
+    top_p: float = 0.8          # Reasonable search space
+    top_k: int = 20            # Balanced search space
+    repeat_penalty: float = 1.05  # Lower penalty for speed
+    n_batch: int = 32          # Larger batch for efficiency
+    n_threads: int = 8         # More threads for speed
+    enable_safety_filter: bool = False    # Disable for speed
+    enable_therapeutic_optimization: bool = False  # Disable for speed  
+    
+    @classmethod
+    def fast_config(cls):
+        """Create a configuration optimized for speed but with complete responses"""
+        return cls(
+            max_tokens=250,  # Allow for complete responses
+            temperature=0.3,
+            top_p=0.8,
+            top_k=20,
+            n_batch=32,
+            n_threads=8,
+            enable_safety_filter=False,  
+            enable_therapeutic_optimization=False  
+        )
 
 class SafetyFilter:
     """Safety filter for therapeutic responses"""
@@ -65,7 +79,7 @@ class SafetyFilter:
         self.inappropriate_patterns = [
             r'(?i)(diagnose|diagnosis|prescribe|medication)',
             r'(?i)(you\s+should\s+take|you\s+need\s+to\s+take)',
-            r'(?i)(emergency|call\s+911|seek\s+immediate)',
+            r'(?i)(emergency|call\s+(911|112)|seek\s+immediate)',
             r'(?i)(replace\s+professional|instead\s+of\s+therapy)'
         ]
     
@@ -280,15 +294,15 @@ class LLMManager:
         max_tokens: Optional[int] = None,
         temperature: Optional[float] = None
     ) -> str:
-        """Generate response using the configured local LLM"""
+        """Generate response using the configured local LLM - NO TIMEOUT, LET IT RUN"""
         start_time = time.time()
         
         try:
-            # Use provided parameters or defaults
+            # Use configured parameters for complete responses
             max_tokens = max_tokens or self.config.max_tokens
             temperature = temperature or self.config.temperature
             
-            # Generate response based on model type
+            # Generate response directly without timeout restrictions
             if self.gpt4all_model:
                 response = self._generate_with_gpt4all(prompt, max_tokens, temperature)
             elif self.ollama_client:
@@ -296,29 +310,34 @@ class LLMManager:
             else:
                 raise RuntimeError("No LLM model available")
             
-            # Update statistics
-            response_time = time.time() - start_time
-            self._update_stats(response_time, True)
+            # Log generation time and update statistics
+            generation_time = time.time() - start_time
+            logger.info(f"Generation completed in {generation_time:.1f}s")
             
-            return response
+            # Update statistics for successful generation
+            self._update_stats(generation_time, True)
+            
+            # Return the response
+            return response.strip() if response else ""
             
         except Exception as e:
             logger.error(f"Error generating response: {e}")
             self._update_stats(time.time() - start_time, False)
-            return self._get_fallback_response()
+            raise  # Re-raise the exception instead of returning fallback
     
     def _generate_with_gpt4all(self, prompt: str, max_tokens: int, temperature: float) -> str:
-        """Generate response using GPT4All"""
+        """Generate response using GPT4All - ULTRA SPEED OPTIMIZED"""
         try:
+            # Use balanced settings for complete responses
             with self.gpt4all_model.chat_session():
                 response = self.gpt4all_model.generate(
                     prompt=prompt,
-                    max_tokens=max_tokens,
-                    temp=temperature,
-                    top_p=self.config.top_p,
-                    top_k=self.config.top_k,
-                    repeat_penalty=self.config.repeat_penalty,
-                    n_batch=self.config.n_batch,
+                    max_tokens=max_tokens,            # Use full requested token count
+                    temp=temperature,                 # Use requested temperature
+                    top_p=self.config.top_p,          # Use config values
+                    top_k=self.config.top_k,          # Use config values
+                    repeat_penalty=self.config.repeat_penalty,  # Use config values
+                    n_batch=64,                       # Large batch for speed
                     streaming=False
                 )
             
@@ -415,6 +434,10 @@ class LLMManager:
         import random
         return random.choice(fallback_responses)
     
+    def _get_fast_fallback_response(self) -> str:
+        """Get instant fallback response when model is too slow"""
+        return "I'm processing your message. While I prepare a response, remember: you're taking a positive step by reaching out. How are you feeling right now?"
+    
     def _update_stats(self, response_time: float, success: bool):
         """Update generation statistics"""
         self.generation_stats["total_generations"] += 1
@@ -488,7 +511,6 @@ class LLMManager:
                 "model_info": self.get_model_info()
             }
 
-# Example usage and testing
 if __name__ == "__main__":
     # Initialize LLM manager
     llm_manager = LLMManager(ModelType.GPT4ALL_MISTRAL)

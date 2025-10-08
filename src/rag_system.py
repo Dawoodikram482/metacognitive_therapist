@@ -38,7 +38,7 @@ class RAGConfig:
     """Configuration for RAG system"""
     max_context_length: int = 4000
     max_retrieved_docs: int = 8
-    similarity_threshold: float = 0.7
+    similarity_threshold: float = 0.3  # Adjusted for new relevance scoring (1/(1+distance))
     context_window_size: int = 10
     enable_query_expansion: bool = True
     enable_context_compression: bool = True
@@ -205,6 +205,8 @@ class AdvancedRAGSystem:
                 n_results=collection_strategy["max_results"],
                 similarity_threshold=self.config.similarity_threshold
             )
+            
+            logger.info(f"Search for '{expanded_query[:50]}...' found {len(results)} results")
             
             # Convert results to Document objects
             for result in results:
@@ -619,7 +621,6 @@ Please respond to the client's question/concern with therapeutic guidance based 
                 "processing_timestamp": datetime.now().isoformat()
             }
 
-# Example usage
 if __name__ == "__main__":
     # This would be initialized with actual vector_db and llm_manager instances
     pass

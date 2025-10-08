@@ -21,17 +21,16 @@ st.set_page_config(
     page_title="Metacognitive Therapy Assistant",
     page_icon="🧠",
     layout="wide",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state="collapsed",  # Hide sidebar by default
     menu_items={
-        'Get Help': 'https://github.com/yourusername/metacognitive_therapist',
-        'Report a bug': 'https://github.com/yourusername/metacognitive_therapist/issues',
+        'Get Help': 'https://github.com/Dawoodikram482/metacognitive_therapist',
+        'Report a bug': 'https://github.com/Dawoodikram482/metacognitive_therapist/issues',
         'About': "Advanced AI-powered metacognitive therapy assistant using RAG and local LLMs"
     }
-)
-
-# Custom CSS for professional styling
+)# Custom CSS for professional styling with dark mode support
 st.markdown("""
 <style>
+    /* Light mode styles (default) */
     .main-header {
         font-size: 2.5rem;
         color: #2E86AB;
@@ -52,11 +51,13 @@ st.markdown("""
     .user-message {
         background-color: #E3F2FD;
         border-left-color: #1976D2;
+        color: #1A1A1A;
     }
     
     .assistant-message {
         background-color: #F3E5F5;
         border-left-color: #7B1FA2;
+        color: #1A1A1A;
     }
     
     .info-box {
@@ -65,6 +66,7 @@ st.markdown("""
         border-radius: 8px;
         border-left: 4px solid #4CAF50;
         margin: 1rem 0;
+        color: #1A1A1A;
     }
     
     .warning-box {
@@ -73,6 +75,7 @@ st.markdown("""
         border-radius: 8px;
         border-left: 4px solid #FF9800;
         margin: 1rem 0;
+        color: #1A1A1A;
     }
     
     .metric-card {
@@ -81,6 +84,7 @@ st.markdown("""
         border-radius: 10px;
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         margin: 0.5rem 0;
+        color: #1A1A1A;
     }
     
     .sidebar-section {
@@ -88,6 +92,7 @@ st.markdown("""
         padding: 1rem;
         border-radius: 8px;
         margin: 1rem 0;
+        color: #1A1A1A;
     }
     
     .footer {
@@ -98,7 +103,173 @@ st.markdown("""
         border-top: 1px solid #ddd;
         margin-top: 3rem;
     }
+
+    /* Dark mode styles - activated when Streamlit dark theme is enabled */
+    [data-theme="dark"] .main-header,
+    .stApp[data-theme="dark"] .main-header {
+        color: #64B5F6;
+        border-bottom-color: #64B5F6;
+    }
+    
+    [data-theme="dark"] .user-message,
+    .stApp[data-theme="dark"] .user-message {
+        background-color: #1E3A5F;
+        border-left-color: #42A5F5;
+        color: #E3F2FD;
+    }
+    
+    [data-theme="dark"] .assistant-message,
+    .stApp[data-theme="dark"] .assistant-message {
+        background-color: #2D1B3D;
+        border-left-color: #AB47BC;
+        color: #F3E5F5;
+    }
+    
+    [data-theme="dark"] .info-box,
+    .stApp[data-theme="dark"] .info-box {
+        background-color: #1B3B1B;
+        border-left-color: #66BB6A;
+        color: #E8F5E8;
+    }
+    
+    [data-theme="dark"] .warning-box,
+    .stApp[data-theme="dark"] .warning-box {
+        background-color: #3D2F1A;
+        border-left-color: #FFB74D;
+        color: #FFF3E0;
+    }
+    
+    [data-theme="dark"] .metric-card,
+    .stApp[data-theme="dark"] .metric-card {
+        background-color: #262730;
+        box-shadow: 0 2px 4px rgba(255,255,255,0.1);
+        color: #FAFAFA;
+    }
+    
+    [data-theme="dark"] .sidebar-section,
+    .stApp[data-theme="dark"] .sidebar-section {
+        background-color: #262730;
+        color: #F8F9FA;
+    }
+    
+    [data-theme="dark"] .footer,
+    .stApp[data-theme="dark"] .footer {
+        color: #999;
+        border-top-color: #333;
+    }
+
+    /* Enhanced contrast for better readability in dark mode */
+    [data-theme="dark"] .stMarkdown,
+    .stApp[data-theme="dark"] .stMarkdown {
+        color: #FFFFFF !important;
+    }
+    
+    [data-theme="dark"] .stText,
+    .stApp[data-theme="dark"] .stText {
+        color: #FFFFFF !important;
+    }
+    
+    /* Ensure chat messages are clearly visible */
+    [data-theme="dark"] .chat-message p,
+    .stApp[data-theme="dark"] .chat-message p {
+        color: inherit !important;
+    }
+    
+    /* Style for code blocks in dark mode */
+    [data-theme="dark"] pre,
+    .stApp[data-theme="dark"] pre {
+        background-color: #1E1E1E !important;
+        color: #FFFFFF !important;
+        border: 1px solid #404040;
+    }
+    
+    [data-theme="dark"] code,
+    .stApp[data-theme="dark"] code {
+        background-color: #2D2D2D !important;
+        color: #FFB74D !important;
+        padding: 2px 4px;
+        border-radius: 3px;
+    }
+    
+    /* Additional dark mode selectors for better compatibility */
+    @media (prefers-color-scheme: dark) {
+        .main-header {
+            color: #64B5F6 !important;
+            border-bottom-color: #64B5F6 !important;
+        }
+        
+        .user-message {
+            background-color: #1E3A5F !important;
+            border-left-color: #42A5F5 !important;
+            color: #E3F2FD !important;
+        }
+        
+        .assistant-message {
+            background-color: #2D1B3D !important;
+            border-left-color: #AB47BC !important;
+            color: #F3E5F5 !important;
+        }
+        
+        .info-box {
+            background-color: #1B3B1B !important;
+            border-left-color: #66BB6A !important;
+            color: #E8F5E8 !important;
+        }
+        
+        .warning-box {
+            background-color: #3D2F1A !important;
+            border-left-color: #FFB74D !important;
+            color: #FFF3E0 !important;
+        }
+        
+        .metric-card {
+            background-color: #262730 !important;
+            box-shadow: 0 2px 4px rgba(255,255,255,0.1) !important;
+            color: #FAFAFA !important;
+        }
+        
+        .sidebar-section {
+            background-color: #262730 !important;
+            color: #F8F9FA !important;
+        }
+        
+        .footer {
+            color: #999 !important;
+            border-top-color: #333 !important;
+        }
+    }
 </style>
+
+<script>
+// Enhanced dark mode detection and application
+function applyDarkModeStyles() {
+    const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const streamlitTheme = document.querySelector('[data-theme]');
+    
+    if (isDark || (streamlitTheme && streamlitTheme.getAttribute('data-theme') === 'dark')) {
+        document.body.style.setProperty('--text-color', '#FFFFFF', 'important');
+        document.body.style.setProperty('--bg-color', '#0E1117', 'important');
+    }
+}
+
+// Apply styles when page loads and when theme changes
+document.addEventListener('DOMContentLoaded', applyDarkModeStyles);
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyDarkModeStyles);
+
+// Streamlit-specific theme detection
+setInterval(() => {
+    const streamlitContainer = document.querySelector('.stApp');
+    if (streamlitContainer) {
+        const computedStyle = window.getComputedStyle(streamlitContainer);
+        const bgColor = computedStyle.backgroundColor;
+        
+        // If background is dark, ensure text is light
+        if (bgColor === 'rgb(14, 17, 23)' || bgColor === 'rgb(38, 39, 48)') {
+            document.body.classList.add('streamlit-dark-mode');
+        }
+    }
+}, 1000);
+</script>
 """, unsafe_allow_html=True)
 
 # Configuration
@@ -131,10 +302,11 @@ def initialize_session_state():
         }
 
 # API Functions
+@st.cache_data(ttl=10)  # Cache for 10 seconds to avoid repeated calls
 def check_api_health() -> Dict[str, Any]:
     """Check if API is healthy and responsive"""
     try:
-        response = requests.get(f"{API_BASE_URL}/health", timeout=5)
+        response = requests.get(f"{API_BASE_URL}/health", timeout=8)  # Longer timeout for initial connection
         if response.status_code == 200:
             return response.json()
         else:
@@ -156,7 +328,7 @@ def send_chat_message(message: str, session_id: Optional[str] = None) -> Dict[st
         response = requests.post(
             f"{API_BASE_URL}/chat", 
             json=payload,
-            timeout=30
+            timeout=600  # 10 minutes - let the model run as long as needed
         )
         
         if response.status_code == 200:
@@ -278,9 +450,10 @@ def render_sidebar():
         st.markdown("""
         <div class="warning-box">
             <strong>If you're in crisis:</strong><br>
-            • US: 988 (Suicide & Crisis Lifeline)<br>
-            • UK: 116 123 (Samaritans)<br>
-            • Emergency: 911/112<br>
+            • Netherlands: 113 (Suicide Prevention) | 0800-0113 (24/7)<br>
+            • Netherlands: 0900-0767 (Mental Health Crisis Line)<br>
+            • EU Emergency: 112<br>
+            • International: 116 123 (Befrienders Worldwide)<br>
             <br>
             <em>This AI assistant cannot replace professional help in emergencies.</em>
         </div>
@@ -384,10 +557,9 @@ def render_message_input():
             response = send_chat_message(user_message.strip(), st.session_state.session_id)
             
             if "error" in response:
-                st.error(f"❌ {response['error']}")
-                # Add error message to history
+                # Add error message to history without displaying system error
                 error_msg = {
-                    "role": "assistant",
+                    "role": "assistant", 
                     "content": "I apologize, but I'm experiencing technical difficulties. Please try again or consider speaking with a mental health professional if you need immediate support.",
                     "timestamp": datetime.now().isoformat(),
                     "error": True
@@ -556,12 +728,15 @@ def render_resources_page():
     st.subheader("🔗 Additional Resources")
     st.markdown("""
     **Professional Help:**
-    - Find a qualified therapist: [Psychology Today](https://www.psychologytoday.com)
+    - Find a therapist in Netherlands: [NIP Psychologen Register](https://www.nip.nl)
+    - Find a therapist in Europe: [EuroPsy Directory](https://www.europsy-efpa.eu)
     - MCT-trained therapists: [MCT Institute](https://www.mct-institute.co.uk)
     
     **Crisis Support:**
-    - National Suicide Prevention Lifeline: 988
-    - Crisis Text Line: Text HOME to 741741
+    - Netherlands Suicide Prevention: 113 or 0800-0113 (24/7 free)
+    - Mental Health Crisis Line NL: 0900-0767 
+    - European Emergency: 112
+    - Befrienders Worldwide: 116 123 (International)
     - International Association for Suicide Prevention: [IASP](https://www.iasp.info/resources/Crisis_Centres/)
     
     **Educational:**
@@ -575,10 +750,10 @@ def render_footer():
     st.markdown("""
     <div class="footer">
         <p><strong>Metacognitive Therapy Assistant</strong> | 
-        Built with ❤️ using Streamlit, FastAPI, LangChain, and GPT4All</p>
+        Built with ❤️</p>
         <p><em>This AI assistant is for educational and supportive purposes only. 
         It does not replace professional mental health care.</em></p>
-        <p>© 2024 | <a href="https://github.com/yourusername/metacognitive_therapist" target="_blank">View Source Code</a></p>
+        <p>© 2024 | <a href="https://github.com/Dawoodikram482/metacognitive_therapist" target="_blank">View Source Code</a></p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -592,7 +767,6 @@ def main():
     
     with tab1:
         render_header()
-        render_sidebar()
         render_chat_interface()
         render_message_input()
     

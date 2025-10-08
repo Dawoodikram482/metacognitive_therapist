@@ -51,21 +51,27 @@ class MetacognitiveTherapistSystem:
             
             # Initialize LLM manager
             logger.info("Initializing LLM manager...")
+            # Balanced configuration - reasonable length, good speed
             generation_config = GenerationConfig(
-                max_tokens=512,
-                temperature=0.7,
-                enable_safety_filter=True,
-                enable_therapeutic_optimization=True
+                max_tokens=180,   # Reasonable response length (~130-150 words)
+                temperature=0.4,  # Balanced creativity/determinism
+                top_p=0.85,
+                top_k=25,        # Good balance
+                n_batch=16,      # Efficient batching
+                n_threads=6,     # Reasonable threading
+                enable_safety_filter=True,    # Keep safety on
+                enable_therapeutic_optimization=True  # Keep therapy optimization
             )
-            self.llm_manager = LLMManager(model_type, generation_config)
+            # Use much smaller/faster 3B model instead of 7B
+            self.llm_manager = LLMManager(ModelType.GPT4ALL_ORCA_MINI, generation_config)
             
             # Initialize RAG system
             logger.info("Initializing RAG system...")
             rag_config = RAGConfig(
-                max_context_length=4000,
-                max_retrieved_docs=8,
-                similarity_threshold=0.7,
-                enable_query_expansion=True,
+                max_context_length=2000,
+                max_retrieved_docs=4,
+                similarity_threshold=0.3,
+                enable_query_expansion=False,
                 enable_context_compression=True
             )
             self.rag_system = AdvancedRAGSystem(self.vector_db, self.llm_manager, rag_config)
@@ -199,7 +205,7 @@ class MetacognitiveTherapistSystem:
         return status
 
 # Demo and testing functions
-async def run_demo():
+async def run_demo(force_reset=False):
     """Run a simple demo of the system"""
     print("🧠 Metacognitive Therapy Chatbot Demo")
     print("=" * 50)
@@ -212,13 +218,22 @@ async def run_demo():
         print("❌ Failed to initialize system")
         return
     
-    # Check if we have therapy data
-    data_path = Path("data/Raw data.pdf")
-    if data_path.exists():
-        print("📚 Setting up knowledge base...")
-        await system.setup_knowledge_base(str(data_path))
+    # Check if we need to setup knowledge base
+    if not force_reset and system.vector_db.is_populated():
+        print("📚 Knowledge base already populated - skipping setup")
+        stats = system.vector_db.get_collection_stats()
+        total_docs = sum(collection_stats.get("document_count", 0) for collection_stats in stats.values())
+        print(f"✅ Found {total_docs} documents across all collections")
     else:
-        print("⚠️  No therapy literature found. Place your PDF in data/Raw data.pdf")
+        data_path = Path("data/Raw data.pdf")
+        if data_path.exists():
+            if force_reset:
+                print("📚 Force reset: Re-setting up knowledge base...")
+            else:
+                print("📚 Setting up knowledge base for the first time...")
+            await system.setup_knowledge_base(str(data_path))
+        else:
+            print("⚠️  No therapy literature found. Place your PDF in data/Raw data.pdf")
     
     # Interactive chat demo
     print("\n💬 Chat Demo (type 'quit' to exit)")
@@ -312,11 +327,12 @@ if __name__ == "__main__":
     parser.add_argument("--demo", action="store_true", help="Run interactive demo")
     parser.add_argument("--check", action="store_true", help="Check system status")
     parser.add_argument("--setup", type=str, help="Setup knowledge base from PDF file")
+    parser.add_argument("--force-reset", action="store_true", help="Force re-setup of knowledge base even if it exists")
     
     args = parser.parse_args()
     
     if args.demo:
-        asyncio.run(run_demo())
+        asyncio.run(run_demo(force_reset=args.force_reset))
     elif args.check:
         asyncio.run(check_system())
     elif args.setup:
