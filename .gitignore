@@ -70,7 +70,6 @@ corpus/
 raw_data/
 processed_data/
 chunks/
-*.pdf
 *.txt
 *.docx
 *.epub
