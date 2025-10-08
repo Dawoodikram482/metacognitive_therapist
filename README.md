@@ -92,12 +92,11 @@ metacognitive_therapist/
 │   ├── 🧠 llm_manager.py            # Local LLM management & safety
 │   ├── 🌐 api.py                    # FastAPI backend server
 │   └── 🎨 streamlit_app.py          # Frontend user interface
-├── 📂 data/                         # Therapy literature storage
-│   └── 📄 Raw data.pdf              # Your therapy book/literature
 ├── 📂 notebooks/                    # Jupyter notebooks for experimentation
 ├── 🐍 main.py                       # System orchestrator & demos
 ├── 📋 requirements.txt              # Python dependencies
 ├── 🚀 run_system.py                 # Easy startup script
+├── 🔧 setup.py                      # Easy setup script
 └── 📖 README.md                     # This documentation
 ```
 
