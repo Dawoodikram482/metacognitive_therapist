@@ -179,8 +179,8 @@ python main.py --demo
 
 Once running, access these URLs:
 
-- **🎨 Main Chat Interface**: http://localhost:8501 (Clean UI with dark mode support)
-- **📚 API Documentation**: http://localhost:8000/docs (Interactive OpenAPI docs)
+- **🎨 Main Chat Interface**: http://localhost:8501 
+- **📚 API Documentation**: http://localhost:8000/docs 
 - **🔧 API Health Check**: http://localhost:8000/health
 - **📊 System Statistics**: http://localhost:8000/admin/stats
 
